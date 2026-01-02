@@ -28,9 +28,9 @@ pipeline {
             }
         }
         
-        stage('Terraform Init') {
+        stage('Terraform Init') { 
             steps {
-                dir(TERRAFORM_DIR) {
+                dir(TERRAFORM_DIR) { #Changes the working dir inside the Jenkins workspace
                     sh '''
                     terraform init \
                       -backend-config="bucket=${STATE_BUCKET}" \
@@ -48,14 +48,16 @@ pipeline {
             steps {
                 dir(TERRAFORM_DIR) {
                     script {
-                        def planFile = "tfplan-${BUILD_NUMBER}"
-                        sh """
+                        def planFile = "tfplan-${BUILD_NUMBER}" #creates a unique terraform plan file with build number
+                        sh """ 
                         terraform plan \
                           -var-file="terraform.tfvars" \
                           -out=${planFile} \
                           -no-color
-                        """
-                        archiveArtifacts artifacts: planFile
+                        """ #Excecute Linux Shell commands
+			#triple quotes allow multi-line commands
+
+                        archiveArtifacts artifacts: planFile #store TF plan file in jenkins
                     }
                 }
             }
